@@ -2,11 +2,7 @@ import React from 'react'
 import { RegisterForm } from '@/features/auth/components/register-form'
 
 const page = () => {
-  return (
-    <div>
-        <RegisterForm />
-    </div>
-  )
+  return <RegisterForm />
 }
 
 export default page
