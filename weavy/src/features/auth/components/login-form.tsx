@@ -101,8 +101,7 @@ export const LoginForm = () => {
     const isPending = form.formState.isSubmitting;
 
     return (
-        <div className="flex flex-col items-center justify-center h-screen">
-            <Card>
+        <Card className="w-full">
                 <CardHeader className="text-center">
                     <CardTitle>Welcome Back</CardTitle>
                     <CardDescription>
@@ -120,6 +119,7 @@ export const LoginForm = () => {
                                         type="button"
                                         disabled={isPending}
                                     >
+                                        <Image src="/github.svg" alt="Github" width={20} height={20} />
                                         Continue with Github
                                     </Button>
                                     <Button
@@ -128,6 +128,7 @@ export const LoginForm = () => {
                                         type="button"
                                         disabled={isPending}
                                     >
+                                        <Image src="/google.svg" alt="Google" width={20} height={20} />
                                         Continue with Google
                                     </Button>
                                 </div>
@@ -185,6 +186,5 @@ export const LoginForm = () => {
                         </Form>
                     </CardContent>
                 </Card>
-            </div>
         );
     };
