@@ -41,20 +41,61 @@ export const LoginForm = () => {
     });
 
     const onSubmit = async (values: LoginSchemaType) => {
-        await authClient.signIn.email({
-            email: values.email,
-            password: values.password,
-            callbackURL: "/"
-        },
-    {
-        onSuccess: () => {
-            toast.success("Logged in successfully");
-            router.push("/");
-        },
-        onError: (ctx) => {
-            toast.error(ctx.error.message);
+        try {
+            await authClient.signIn.email({
+                email: values.email,
+                password: values.password,
+                callbackURL: "/"
+            },
+            {
+                onSuccess: () => {
+                    toast.success("Logged in successfully");
+                    router.push("/");
+                },
+                onError: (ctx) => {
+                    // Handle specific error types with user-friendly messages
+                    const error = ctx.error;
+                    let errorMessage = "An error occurred during login. Please try again.";
+                    
+                    if (error.message) {
+                        // Map common error messages to user-friendly ones
+                        const errorMessageLower = error.message.toLowerCase();
+                        
+                        if (errorMessageLower.includes("invalid") || errorMessageLower.includes("incorrect")) {
+                            errorMessage = "Invalid email or password. Please check your credentials and try again.";
+                        } else if (errorMessageLower.includes("not found") || errorMessageLower.includes("does not exist")) {
+                            errorMessage = "No account found with this email address.";
+                        } else if (errorMessageLower.includes("network") || errorMessageLower.includes("connection")) {
+                            errorMessage = "Network error. Please check your connection and try again.";
+                        } else if (errorMessageLower.includes("rate limit") || errorMessageLower.includes("too many")) {
+                            errorMessage = "Too many login attempts. Please wait a moment and try again.";
+                        } else if (errorMessageLower.includes("email") && errorMessageLower.includes("verify")) {
+                            errorMessage = "Please verify your email address before logging in.";
+                        } else {
+                            // Use the original error message if it's already user-friendly
+                            errorMessage = error.message;
+                        }
+                    }
+                    
+                    toast.error(errorMessage);
+                    form.setError("root", {
+                        type: "manual",
+                        message: errorMessage
+                    });
+                }
+            });
+        } catch (error) {
+            // Catch any unexpected errors
+            const errorMessage = error instanceof Error 
+                ? error.message 
+                : "An unexpected error occurred. Please try again.";
+            
+            toast.error(errorMessage);
+            form.setError("root", {
+                type: "manual",
+                message: errorMessage
+            });
         }
-    });
     };
 
     const isPending = form.formState.isSubmitting;
@@ -126,6 +167,11 @@ export const LoginForm = () => {
                                             </FormItem>
                                         )}
                                     />
+                                    {form.formState.errors.root && (
+                                        <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">
+                                            {form.formState.errors.root.message}
+                                        </div>
+                                    )}
                                     <Button type="submit" className="w-full" disabled={isPending}>
                                         {isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : "Login"}
                                     </Button>

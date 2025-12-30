@@ -23,16 +23,39 @@ export const createTRPCRouter = t.router;
 export const createCallerFactory = t.createCallerFactory;
 export const baseProcedure = t.procedure;
 export const protectedProcedure = baseProcedure.use(async ({ctx, next}) => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-  if (!session) {
-    throw new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorized" });
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+    
+    if (!session) {
+      throw new TRPCError({ 
+        code: "UNAUTHORIZED", 
+        message: "You must be logged in to access this resource." 
+      });
+    }
+    
+    return next({
+      ctx: {
+        ...ctx,
+        auth: session,
+      },
+    });
+  } catch (error) {
+    // If it's already a TRPCError, re-throw it
+    if (error instanceof TRPCError) {
+      throw error;
+    }
+    
+    // Handle unexpected errors (e.g., database connection issues)
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error in protectedProcedure:", error);
+    }
+    
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "An error occurred while verifying your session. Please try again.",
+      cause: error,
+    });
   }
-  return next({
-    ctx: {
-      ...ctx,
-      auth:session,
-    },
-  });
 });
