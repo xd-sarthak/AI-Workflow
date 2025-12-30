@@ -1,0 +1,21 @@
+review:
+  enable_auto_review: true
+  require_review_labels: false
+  review_comment_prefix: "⚠️ CodeRabbit Review"
+  auto_apply_suggestions: false
+  path_includes:
+    - "src/"
+    - "app/"
+    - "lib/"
+  path_excludes:
+    - "node_modules/"
+    - "dist/"
+    - "build/"
+    - ".next/"
+
+rules:
+  max_issue_comments: 30
+  severity_threshold: medium
+
+knowledge:
+  enable_repo_context: true
