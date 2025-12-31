@@ -1,17 +1,20 @@
-review:
-  enable_auto_review: true
+reviews:
+  auto_review: true
   require_review_labels: false
-  review_comment_prefix: "⚠️ CodeRabbit Review"
-  auto_apply_suggestions: false
+  review_type: extensive        # <-- ensures summaries + macro feedback
+  summary: enabled              # <-- YOU DON'T HAVE THIS
   path_includes:
-    - "src/"
-    - "app/"
-    - "lib/"
-  path_excludes:
-    - "node_modules/"
-    - "dist/"
-    - "build/"
-    - ".next/"
+    - "src/**"
+    - "app/**"
+    - "lib/**"
+  path_exclusions:
+    - "node_modules/**"
+    - "dist/**"
+    - "build/**"
+    - ".next/**"
+  fail_on:
+    - errors
+    - blockers
 
 rules:
   max_issue_comments: 30
