@@ -4,7 +4,7 @@ import { prefetchWorkflows } from '@/features/workflows/server/prefetch'
 import { HydrateClient } from '@/trpc/server'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Suspense } from 'react'
-import { WorkflowsContainer, WorkflowsList } from '@/features/workflows/components/workflows'
+import { WorkflowsContainer, WorkflowsList, WorkflowsLoading, WorkflowsError } from '@/features/workflows/components/workflows'
 import type { SearchParams } from 'nuqs'
 import { workflowsParamsLoader } from '@/features/workflows/server/params-loader'
 
@@ -21,9 +21,9 @@ const page = async({searchParams}: Props) => {
   return (
     <WorkflowsContainer>
     <HydrateClient>
-      <ErrorBoundary fallback={<div>Error</div>}>
-        <Suspense fallback={<div>Loading...</div>}>
-          <WorkflowsList />
+      <ErrorBoundary fallback={<WorkflowsError/>}>
+        <Suspense fallback={<WorkflowsLoading/>}>
+          <WorkflowsList /> 
         </Suspense>
       </ErrorBoundary>
     </HydrateClient>
