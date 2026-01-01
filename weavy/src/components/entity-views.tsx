@@ -96,7 +96,7 @@ export const EntitySearch = ({
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
-                className="max-w-[200px] bg-background shadown-none border-border pl-8"
+                className="max-w-[200px] bg-background shadow-none border-border pl-8"
             />
        </div>
     )
