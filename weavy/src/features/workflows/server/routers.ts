@@ -4,6 +4,8 @@ import {generateSlug} from "random-word-slugs"
 import {z} from "zod"
 import { PAGINATION } from "@/config/constants"
 import { TRPCError } from "@trpc/server"
+import { NodeType } from "@/generated/prisma/enums"
+import {Node,Edge} from "@xyflow/react"
 
 export const workflowsRouter = createTRPCRouter({
     create:protectedProcedure.mutation(({ctx}) => {
@@ -11,6 +13,16 @@ export const workflowsRouter = createTRPCRouter({
             data:{
                 name:generateSlug(3),
                 userId:ctx.auth.user.id,
+                nodes: {
+                    create: {
+                        type: NodeType.INITIAL,
+                        position: {
+                            x: 0,
+                            y: 0,
+                        },
+                        name: "Initial",
+                    }
+                }
             }
         });
     }),
@@ -45,19 +57,41 @@ export const workflowsRouter = createTRPCRouter({
     getOne: protectedProcedure
     .input(z.object({id:z.string()}))
     .query(async({ctx,input}) => {
-         const workflow = await prisma.workflow.findUnique({
+         const workflow = await prisma.workflow.findUniqueOrThrow({
             where:{
                 id:input.id,
                 userId:ctx.auth.user.id,
+            },
+            include:{
+                nodes: true,
+                connections: true,
             }
          });
-         if(!workflow) {
-            throw new TRPCError({
-                code: "NOT_FOUND",
-                message: "Workflow not found",
-            });
-         }
-         return workflow;
+        
+         //transform server nodes to reactflow client nodes
+        const nodes: Node[] = workflow.nodes.map((node) => ({
+            id: node.id,
+            type: node.type,
+            position: node.position as {x: number, y: number},
+            data: (node.data as Record<string, unknown>) || {},
+        }));
+
+        //transform server connections to reactflow client edges
+        const edges: Edge[] = workflow.connections.map((connection) => ({
+            id: connection.id,
+            source: connection.fromNodeId,
+            target: connection.toNodeId,
+           sourceHandle: connection.fromOutput,
+           targetHandle: connection.toInput,
+        }));
+
+        return {
+            id: workflow.id,
+            name: workflow.name,
+            nodes,
+            edges,
+        }
+
     }),
 
     getMany: protectedProcedure

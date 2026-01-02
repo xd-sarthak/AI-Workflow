@@ -38,18 +38,18 @@ export const EntityHeader =({
     return (
         <div className="flex flex-row items-center justify-between gap-x-4">
             <div className="flex flex-col">
-                <h1 className="text-lg md:text-xl font-semibold">{title}</h1>
+                <h1 className="text-lg md:text-xl font-medium">{title}</h1>
                 {description && (<p className="text-xs md:text-sm text-muted-foreground">{description}</p>)}
             </div>
             {onNew && !newButtonHref && (
-                <Button disabled={isCreating || disabled} size="sm" onClick={onNew}>
+                <Button disabled={isCreating || disabled} size="sm" onClick={onNew} className="bg-primary text-primary-foreground hover:brightness-110">
                         <PlusIcon className="size-4" />
                         {newButtonLabel}
                 </Button>
             )}
 
             {newButtonHref && !onNew && (
-                <Button size="sm" asChild>
+                <Button size="sm" asChild className="bg-primary text-primary-foreground hover:brightness-110">
                     <Link href={newButtonHref} prefetch>
                         <PlusIcon className="size-4" />
                         {newButtonLabel}
@@ -118,7 +118,7 @@ export const EntitySearch = ({
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
-                className="max-w-[200px] bg-background shadow-none border-border pl-8"
+                className="max-w-[200px] bg-background shadow-none border-border pl-8 bg-card/50 border-border/50"
             />
        </div>
     )
@@ -316,13 +316,13 @@ export const EntityItem = ({
     }
     return (
         <Link href={href} prefetch>
-            <Card className={cn("p-4 shadown-none hover:shadow cursor-pointer",isRemoving && "opacity-50 cursor-not-allowed", className)}>
+            <Card className={cn("p-4 shadow-none hover:brightness-105 cursor-pointer border-border/50 bg-card/50",isRemoving && "opacity-50 cursor-not-allowed", className)}>
                 <CardContent className="flex flex-row items-center justify-between p-0">
                     <div className="flex items-center gap-3">
                         {image}
                         <div>
                             <CardTitle className="text-base font-medium">{title}</CardTitle>
-                            {!!subtitle && (<CardDescription className="text-xs text-muted-foreground">{subtitle}</CardDescription>)}
+                            {!!subtitle && (<CardDescription className="text-xs text-muted-foreground font-normal">{subtitle}</CardDescription>)}
                         </div>
                     </div>
                     {(actions || onRemove) && (
@@ -335,6 +335,7 @@ export const EntityItem = ({
                                         size="icon"
                                         variant="ghost"
                                         onClick={(e) => e.stopPropagation()}
+                                        className="text-muted-foreground hover:text-foreground"
                                         >
                                             <MoreVerticalIcon className="size-4"/>
                                         </Button>
