@@ -7,8 +7,10 @@ import {PlaceholderNode} from "./reactflow/placeholder-node";
 import { WorkflowNode } from "./workflow-node";
 export const InitialNode = memo((props: NodeProps) => {
     return (
-        <WorkflowNode showToolbar={false}>
-            <PlaceholderNode {...props}>
+        <WorkflowNode  >
+            <PlaceholderNode {...props}
+            onClick={() => {}}
+            >
                 <div className="cursor-pointer flex items-center justify-center">
                     <PlusIcon className="size-4" />
                 </div>
