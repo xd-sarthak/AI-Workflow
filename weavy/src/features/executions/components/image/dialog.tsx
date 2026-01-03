@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect, useRef } from "react";
 import { useReactFlow } from "@xyflow/react";
+import { toast } from "sonner";
 
 interface Props {
     open: boolean;
@@ -34,14 +35,14 @@ export const ImageNodeDialog = ({ open, onOpenChange, nodeId, initialImageUrl = 
 
         // Validate file type
         if (!file.type.startsWith('image/')) {
-            alert('Please select a valid image file');
+            toast.error('Please select a valid image file');
             return;
         }
 
         // Validate file size (max 5MB)
         const maxSize = 5 * 1024 * 1024; // 5MB
         if (file.size > maxSize) {
-            alert('Image size must be less than 5MB');
+            toast.error('Image size must be less than 5MB');
             return;
         }
 
@@ -55,7 +56,7 @@ export const ImageNodeDialog = ({ open, onOpenChange, nodeId, initialImageUrl = 
             setPreviewUrl(result);
         };
         reader.onerror = () => {
-            alert('Error reading image file');
+            toast.error('Error reading image file');
         };
         reader.readAsDataURL(file);
     };

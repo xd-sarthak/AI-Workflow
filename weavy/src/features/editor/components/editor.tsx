@@ -2,13 +2,15 @@
 
 import { ErrorView, LoadingView } from "@/components/entity-views";
 import { useSuspenseWorkflow } from "../../workflows/hooks/use-workflows";
-import { useState,useCallback } from "react";
+import { useState,useCallback, useMemo } from "react";
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge,Node,Edge,NodeChange,EdgeChange,Connection, Background, Controls, MiniMap,Panel } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { nodeComponents } from "@/config/node-components";
 import { AddNodeButton } from "./add-node-button";
 import { editorAtom } from "../store/atom";
 import { useSetAtom } from "jotai";
+import { NodeType } from "@/generated/prisma/enums";
+import { ExecuteWorkflowButton } from "./execute-workflow-button";
 
 export const EditorLoading = () => {
     return <LoadingView message="Loading editor..." />
@@ -48,6 +50,10 @@ export const Editor = ({workflowId}: {workflowId: string}) => {
         [],
       );
 
+      const hasManualTrigger = useMemo(() => {
+        return nodes.some((node) => node.type === NodeType.MANUAL_TRIGGER)
+      },[nodes])
+
     return (
         <div className="h-full w-full">
             <ReactFlow
@@ -69,6 +75,11 @@ export const Editor = ({workflowId}: {workflowId: string}) => {
                 <Panel position="top-right">
                     <AddNodeButton />
                 </Panel>
+                {hasManualTrigger && (
+                    <Panel position="bottom-right">
+                        <ExecuteWorkflowButton workflowId={workflowId} />
+                    </Panel>
+                )}
             </ReactFlow>
         </div>
     )
