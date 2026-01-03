@@ -1,19 +1,20 @@
 "use client"
 
-import {type NodeProps, Position } from "@xyflow/react"
+import {type NodeProps, Position, useReactFlow } from "@xyflow/react"
 import type {LucideIcon} from "lucide-react"
 import Image from "next/image"
 import {memo,type ReactNode,useCallback} from "react"
 import {BaseNode,BaseNodeContent} from "@/components/reactflow/base-node"
 import {BaseHandle} from "@/components/reactflow/base-handle"
 import { WorkflowNode } from "./workflow-node"
+import { type NodeStatus, NodeStatusIndicator } from "./reactflow/node-status-indicator";
 
 interface BaseExecutionNodeProps extends NodeProps {
     icon: LucideIcon | string;
     name: string;
     description?: string;
     children?: ReactNode;
-    //status?: NodeStatus;
+    status?: NodeStatus;
     onSettings?: () => void;
     onDoubleClick?: () => void;
 };
@@ -26,9 +27,22 @@ export const BaseExecutionNode = memo(({
     children,
     onSettings,
     onDoubleClick,
+    status = "initial",
 }:BaseExecutionNodeProps) => {
 
-    const handleDelete = () => {}
+    const {setNodes,setEdges} = useReactFlow();
+
+    const handleDelete = () => {
+        setNodes((currentNodes) => {
+            const updatedNodes = currentNodes.filter((node) => node.id !== id)
+            return updatedNodes;
+        });
+
+        setEdges((currentEdges) => {
+            const updatedEdges = currentEdges.filter((edge) => edge.source !== id && edge.target !== id)
+            return updatedEdges;
+        });
+    }
     return (
     <WorkflowNode
     name={name}
@@ -36,7 +50,8 @@ export const BaseExecutionNode = memo(({
     onSettings={onSettings}
     onDelete={handleDelete}
     >
-        <BaseNode onDoubleClick={onDoubleClick}>
+        <NodeStatusIndicator status={status} variant="border" className="rounded-r-sm">
+        <BaseNode status={status} onDoubleClick={onDoubleClick}>
         <BaseNodeContent>
          {typeof Icon === "string" ? (
             <Image src={Icon} alt={name} width={16} height={16} />
@@ -57,6 +72,7 @@ export const BaseExecutionNode = memo(({
          />
         </BaseNodeContent>
         </BaseNode>
+        </NodeStatusIndicator>
     </WorkflowNode>
     );
 });
