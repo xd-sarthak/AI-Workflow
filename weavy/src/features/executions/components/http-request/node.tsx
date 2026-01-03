@@ -17,7 +17,7 @@ type HttpRequestNodeType = Node<HttpRequestNodeData>;
 export const HttpRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
     const nodeData = props.data as HttpRequestNodeData;
     const description = nodeData?.endpoint ? `${nodeData.method || "GET"} : ${nodeData.endpoint}` : "Not configured"
-
+    const nodeStatus = "error";
     return (
         <>
             <BaseExecutionNode 
@@ -27,6 +27,7 @@ export const HttpRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
             name="HTTP Request"
             onDoubleClick={() => {}}
             onSettings={() => {}}
+            status={nodeStatus}
             />
         </>
     )

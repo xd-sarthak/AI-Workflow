@@ -5,7 +5,9 @@ import { useReactFlow } from "@xyflow/react";
 import{
     GlobeIcon,
     MousePointerIcon,
-    WebhookIcon
+    WebhookIcon,
+    FileTextIcon,
+    ImageIcon
 } from "lucide-react";
 
 import {toast} from "sonner";
@@ -44,6 +46,18 @@ const executionNodes: NodeTypeOption[] = [
         label: "HTTP Request",
         description: "Make an HTTP request",
         icon: GlobeIcon,
+    },
+    {
+        type: NodeType.TEXT,
+        label: "Text",
+        description: "Accept and store text input",
+        icon: FileTextIcon,
+    },
+    {
+        type: NodeType.IMAGE,
+        label: "Image",
+        description: "Upload and store an image",
+        icon: ImageIcon,
     },
 ];
 
