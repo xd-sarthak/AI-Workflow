@@ -9,6 +9,7 @@ type HttpRequestNodeData = {
     endpoint?: string;
     method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD";
     body?: string;
+    status?: "loading" | "success" | "error" | "initial";
     [key: string]: unknown;
 }
 
@@ -17,7 +18,7 @@ type HttpRequestNodeType = Node<HttpRequestNodeData>;
 export const HttpRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
     const nodeData = props.data as HttpRequestNodeData;
     const description = nodeData?.endpoint ? `${nodeData.method || "GET"} : ${nodeData.endpoint}` : "Not configured"
-    const nodeStatus = "error";
+    const nodeStatus = nodeData?.status as "loading" | "success" | "error" | "initial" | undefined;
     return (
         <>
             <BaseExecutionNode 

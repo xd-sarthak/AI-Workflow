@@ -23,7 +23,7 @@ export const SpinnerLoadingIndicator = ({
     <div className="relative">
       <StatusBorder className="border-purple-500/40">{children}</StatusBorder>
 
-      <div className="bg-background/50 absolute inset-0 z-50 rounded-[9px] backdrop-blur-xs" />
+      <div className="bg-background/50 absolute inset-0 z-50 backdrop-blur-xs" />
       <div className="absolute inset-0 z-50">
         <span className="absolute top-[calc(50%-1.25rem)] left-[calc(50%-1.25rem)] inline-block h-10 w-10 animate-ping rounded-full bg-blue-700/20" />
 
@@ -42,7 +42,7 @@ export const BorderLoadingIndicator = ({
 }) => {
   return (
     <>
-      <div className={cn("absolute -top-px -left-px h-[calc(100%+2px)] w-[calc(100%+2px)]", className)} >
+      <div className="absolute -top-px -left-px h-[calc(100%+2px)] w-[calc(100%+2px)]" >
         <style>
           {`
         @keyframes spin {
@@ -60,7 +60,7 @@ export const BorderLoadingIndicator = ({
         }
       `}
         </style>
-        <div className={cn("absolute inset-0 overflow-hidden rounded-[9px]", className)}>
+        <div className={cn("absolute inset-0 overflow-hidden", className)}>
           <div className="spinner rounded-full bg-[conic-gradient(from_0deg_at_50%_50%,rgb(147,51,234)_0deg,rgba(147,51,234,0)_360deg)]" />
         </div>
       </div>
@@ -80,7 +80,7 @@ const StatusBorder = ({
     <>
       <div
         className={cn(
-          "absolute -top-px -left-px h-[calc(100%+2px)] w-[calc(100%+2px)] rounded-[9px] border-2",
+          "absolute -top-px -left-px h-[calc(100%+2px)] w-[calc(100%+2px)] border-2",
           className,
         )}
       />
