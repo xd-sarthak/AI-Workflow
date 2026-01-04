@@ -4,6 +4,7 @@ import {createGoogleGenerativeAI} from "@ai-sdk/google";
 import {generateText} from "ai";
 import { NonRetriableError } from "inngest";
 import { topologicalSort } from "./utils";
+import { getExecutor } from "@/features/executions/lib/executor-registry";
 
 const google = createGoogleGenerativeAI();
 
@@ -21,16 +22,16 @@ export const executeWorkflow = inngest.createFunction(
   { event: "workflows/execute.workflow" },
   async ({ event, step }) => {
 
-    const worflowId = event.data.workflowId;
+    const workflowId = event.data.workflowId;
 
-    if(!worflowId) {
+    if(!workflowId) {
       throw new NonRetriableError("Workflow ID is required");
     }
 
     const sortedNodes = await step.run("prepare-workflow",async () => {
       const workflow = await prisma.workflow.findUniqueOrThrow({
         where:{
-          id:worflowId,
+          id:workflowId,
         },
         include:{
           nodes:true,
@@ -42,7 +43,21 @@ export const executeWorkflow = inngest.createFunction(
     });
 
     //initialize the context with any initial data from the trigger
-    let context =event.data.initialData || {};
-    return {sortedNodes};
+    let context = event.data.initialData || {};
+
+    //execute the workflow
+    for(const node of sortedNodes) {
+      const executor = getExecutor(node.type);
+      context = await executor({
+        data: node.data as Record<string,unknown>,
+        nodeId: node.id,
+        context,
+        step,
+      });
+    }
+    return {
+      workflowId,
+      result:context,
+    };
   },
 );

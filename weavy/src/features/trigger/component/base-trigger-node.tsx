@@ -27,7 +27,7 @@ export const BaseTriggerNode = memo(({
     children,
     onSettings,
     onDoubleClick,
-    status = "initial",
+    status,
 }:BaseTriggerNodeProps) => {
 
     const {setNodes,setEdges} = useReactFlow();
