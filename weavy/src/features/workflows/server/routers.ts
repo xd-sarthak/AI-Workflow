@@ -8,6 +8,7 @@ import { NodeType } from "@/generated/prisma/enums"
 import {Node,Edge} from "@xyflow/react"
 
 export const workflowsRouter = createTRPCRouter({
+
     create:protectedProcedure.mutation(({ctx}) => {
         return prisma.workflow.create({
             data:{
@@ -20,7 +21,7 @@ export const workflowsRouter = createTRPCRouter({
                             x: 0,
                             y: 0,
                         },
-                        name: "Initial",
+                        name: NodeType.INITIAL,
                     }
                 }
             }
@@ -57,6 +58,7 @@ export const workflowsRouter = createTRPCRouter({
     getOne: protectedProcedure
     .input(z.object({id:z.string()}))
     .query(async({ctx,input}) => {
+        
          const workflow = await prisma.workflow.findUniqueOrThrow({
             where:{
                 id:input.id,
