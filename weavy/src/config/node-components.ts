@@ -5,6 +5,8 @@ import { InitialNode } from "@/components/initial-node";
 // Register node components here 
 export const nodeComponents = {
     [NodeType.INITIAL] : InitialNode,
+    [NodeType.MANUAL_TRIGGER] : InitialNode,
+    [NodeType.HTTP_REQUEST] : InitialNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeType = keyof typeof nodeComponents
