@@ -7,14 +7,14 @@ import {memo,type ReactNode,useCallback} from "react"
 import {BaseNode,BaseNodeContent} from "@/components/reactflow/base-node"
 import {BaseHandle} from "@/components/reactflow/base-handle"
 import { WorkflowNode } from "./workflow-node"
-//import { type NodeStatus, NodeStatusIndicator } from "./reactflow/node-status-indicator";
+import { type NodeStatus, NodeStatusIndicator } from "./reactflow/node-status-indicator";
 
 interface BaseExecutionNodeProps extends NodeProps {
     icon: LucideIcon | string;
     name: string;
     description?: string;
     children?: ReactNode;
-    //status?: NodeStatus;
+    status?: NodeStatus;
     onSettings?: () => void;
     onDoubleClick?: () => void;
 };
@@ -27,7 +27,7 @@ export const BaseExecutionNode = memo(({
     children,
     onSettings,
     onDoubleClick,
-    //status,
+    status,
 }:BaseExecutionNodeProps) => {
 
     const {setNodes,setEdges} = useReactFlow();
@@ -50,8 +50,8 @@ export const BaseExecutionNode = memo(({
     onSettings={onSettings}
     onDelete={handleDelete}
     >
-        {/*<NodeStatusIndicator status={status} variant="border" className="rounded-sm">*/}
-        <BaseNode /*status={status}*/ onDoubleClick={onDoubleClick}>
+        <NodeStatusIndicator status={status} variant="border" className="rounded-sm">
+        <BaseNode status={status} onDoubleClick={onDoubleClick}>
         <BaseNodeContent>
          {typeof Icon === "string" ? (
             <Image src={Icon} alt={name} width={16} height={16} />
@@ -72,7 +72,7 @@ export const BaseExecutionNode = memo(({
          />
         </BaseNodeContent>
         </BaseNode>
-        {/*</NodeStatusIndicator>*/}
+        </NodeStatusIndicator>
     </WorkflowNode>
     );
 });
