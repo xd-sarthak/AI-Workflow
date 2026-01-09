@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "inngest:dev": "inngest-cli dev",
-    "dev:all": "mprocs"
+    "dev:all": "dotenv -- mprocs",
+    "ngrok:dev": "dotenv -- ngrok http --url=$NGROK_URL 3000"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.1",
@@ -53,6 +54,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
+    "dotenv-cli": "^11.0.0",
     "embla-carousel-react": "^8.6.0",
     "handlebars": "^4.7.8",
     "inngest": "3.44.1",
