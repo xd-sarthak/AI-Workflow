@@ -6,31 +6,19 @@ import {ManualTriggerDialog} from "./dialog";
 import { useNodeStatus } from "@/features/executions/hooks/use-node-status";
 import { getManualTriggerSubscriptionToken } from "./action";
 import { manualTriggerChannel } from "@/inngest/channels/manual-trigger";
-type ManualTriggerNodeData = {
-    status?: "loading" | "success" | "error" | "initial";
-    [key: string]: unknown;
-};
 
-type ManualTriggerNodeType = Node<ManualTriggerNodeData>;
-
-export const ManualTriggerNode = memo((props: NodeProps) => {
+export const GoogleFormTriggerNode = memo((props: NodeProps) => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const handleSettings = () => setDialogOpen(true);
     const handleDoubleClick = () => setDialogOpen(true);
-    const nodeData = props.data as ManualTriggerNodeData;
-    const nodeStatus = useNodeStatus({
-            nodeId: props.id,
-            channel: "manual-trigger-execution",
-            topic: "status",
-            refreshToken: getManualTriggerSubscriptionToken
-        });
+    const nodeStatus = "initial";
     return (
         <>
             <ManualTriggerDialog open={dialogOpen} onOpenChange={setDialogOpen}/>
             <BaseTriggerNode 
                 {...props}
-                icon={MousePointer2Icon}
-                name="Manual Trigger"
+                icon="/googleform.svg"
+                name="When form is submitted"
                 onSettings={handleSettings}
                 onDoubleClick={handleDoubleClick}
                 status = {nodeStatus}

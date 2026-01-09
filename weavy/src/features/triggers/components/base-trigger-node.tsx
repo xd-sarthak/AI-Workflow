@@ -14,7 +14,7 @@ interface BaseTriggerNodeProps extends NodeProps {
     name: string;
     description?: string;
     children?: ReactNode;
-    //status?: NodeStatus;
+    status?: NodeStatus;
     onSettings?: () => void;
     onDoubleClick?: () => void;
 };
@@ -27,7 +27,7 @@ export const BaseTriggerNode = memo(({
     children,
     onSettings,
     onDoubleClick,
-    //status,
+    status,
 }:BaseTriggerNodeProps) => {
 
     const {setNodes,setEdges} = useReactFlow();
@@ -52,8 +52,8 @@ export const BaseTriggerNode = memo(({
     onSettings={onSettings}
     onDelete={handleDelete}
     >
-        <NodeStatusIndicator status="initial" variant="border" className="rounded-l-2xl">
-        <BaseNode /*status={status}*/ onDoubleClick={onDoubleClick}
+        <NodeStatusIndicator status={status} variant="border" className="rounded-l-2xl">
+        <BaseNode status={status} onDoubleClick={onDoubleClick}
         className="rounded-l-2xl relative group"
         >
         <BaseNodeContent>
