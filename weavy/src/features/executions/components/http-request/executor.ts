@@ -1,11 +1,19 @@
 import type { NodeExecutor } from "@/features/executions/types";
 import { NonRetriableError } from "inngest";
 import ky, {type Options as KyOptions} from "ky";
+import Handlebars from "handlebars";
+
+Handlebars.registerHelper("json",(context) =>{
+    const stringified = JSON.stringify(context,null,2);
+    const safeString = new Handlebars.SafeString(stringified);
+    return safeString;
+});
+
 
 type HttpRequestData = {
-    variableName?: string;
-    endpoint?: string;
-    method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD";
+    variableName: string;
+    endpoint: string;
+    method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD";
     body?: string;
 };
 
@@ -22,14 +30,21 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({data,n
         throw new NonRetriableError("HTTP node is not configured with a variable name to store the response");
     }
 
+    if(!data.method){
+        //todo publish error state
+        throw new NonRetriableError("HTTP node is not configured with a method");
+    }
+
     const result = await step.run("http-request",async() => {
-        const endpoint = data.endpoint!;
-        const method = data.method || "GET";
+        const endpoint = Handlebars.compile(data.endpoint)(context);
+        const method = data.method;
 
         const options:KyOptions = {method};
 
         if(["POST", "PUT", "PATCH"].includes(method) && data.body) {
-            options.body = data.body;
+            const resolved = Handlebars.compile(data.body || "{}")(context);
+            JSON.parse(resolved); // Validate JSON
+            options.body = resolved;
             options.headers = {
                 "Content-Type": "application/json",
             }
@@ -49,7 +64,7 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({data,n
 
         return {
             ...context,
-            [data.variableName!]: responsePayload
+            [data.variableName]: responsePayload
         }
     });
     
