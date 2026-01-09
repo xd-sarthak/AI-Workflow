@@ -8,11 +8,10 @@ import { useState } from "react";
 import { HttpRequestDialog } from "./dialog";
 import { HttpRequestFormValues } from "./dialog";
 type HttpRequestNodeData = {
+    variableName?: string;
     endpoint?: string;
     method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD";
     body?: string;
-    //tatus?: "loading" | "success" | "error" | "initial";
-    //[key: string]: unknown;
 }
 
 type HttpRequestNodeType = Node<HttpRequestNodeData>;
