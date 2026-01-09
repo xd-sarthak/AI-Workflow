@@ -7,6 +7,8 @@ import { BaseExecutionNode } from "@/components/base-execution-node";
 import { useState } from "react";
 import { HttpRequestDialog } from "./dialog";
 import { HttpRequestFormValues } from "./dialog";
+import { useNodeStatus } from "../../hooks/use-node-status";
+import { getHttpRequestSubscriptionToken } from "./actions";
 type HttpRequestNodeData = {
     variableName?: string;
     endpoint?: string;
@@ -22,6 +24,12 @@ export const HttpRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
     const [dialogOpen,setDialogOpen] = useState(false);
 
     const {setNodes} = useReactFlow();
+    const nodeStatus = useNodeStatus({
+        nodeId: props.id,
+        channel: "http-request-execution",
+        topic: "status",
+        refreshToken: getHttpRequestSubscriptionToken
+    });
 
     const handleSubmit = (values: HttpRequestFormValues) => {
         setNodes((nodes) => nodes.map((node) => {
@@ -59,7 +67,7 @@ export const HttpRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
             description={description}
             onDoubleClick={handleOpenSettings}
             onSettings={handleOpenSettings}
-            //status={nodeStatus}
+            status={nodeStatus}
             />
         </>
     )

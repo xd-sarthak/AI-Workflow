@@ -3,7 +3,9 @@ import { memo, useState } from "react";
 import { BaseTriggerNode } from "../base-trigger-node";
 import { MousePointer2Icon } from "lucide-react";
 import {ManualTriggerDialog} from "./dialog";
-
+import { useNodeStatus } from "../../hooks/use-node-status";
+import { getManualTriggerSubscriptionToken } from "./action";
+import { manualTriggerChannel } from "@/inngest/channels/manual-trigger";
 type ManualTriggerNodeData = {
     status?: "loading" | "success" | "error" | "initial";
     [key: string]: unknown;
@@ -16,7 +18,12 @@ export const ManualTriggerNode = memo((props: NodeProps) => {
     const handleSettings = () => setDialogOpen(true);
     const handleDoubleClick = () => setDialogOpen(true);
     const nodeData = props.data as ManualTriggerNodeData;
-    const nodeStatus = nodeData?.status as "loading" | "success" | "error" | "initial" | undefined;
+    const nodeStatus = useNodeStatus({
+            nodeId: props.id,
+            channel: "manual-trigger-execution",
+            topic: "status",
+            refreshToken: manualTriggerChannel
+        });
     return (
         <>
             <ManualTriggerDialog open={dialogOpen} onOpenChange={setDialogOpen}/>

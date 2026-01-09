@@ -2,6 +2,7 @@ import type { NodeExecutor } from "@/features/executions/types";
 import { NonRetriableError } from "inngest";
 import ky, {type Options as KyOptions} from "ky";
 import Handlebars from "handlebars";
+import { httpRequestChannel } from "@/inngest/channels/http-request";
 
 Handlebars.registerHelper("json",(context) =>{
     const stringified = JSON.stringify(context,null,2);
@@ -17,24 +18,45 @@ type HttpRequestData = {
     body?: string;
 };
 
-export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({data,nodeId,context,step}) => {
-    //todo pub loading state
+export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({data,nodeId,context,step,publish}) => {
+    await publish(
+        httpRequestChannel().status({
+            nodeId,
+            status: "loading"
+        }),
+    );
 
     if(!data.endpoint){
-        //TODO: Publish error state
+        await publish(
+        httpRequestChannel().status({
+            nodeId,
+            status: "error"
+        }),
+    );
+
         throw new NonRetriableError("HTTP node is not configured with an endpoint");
     }
 
     if(!data.variableName){
-        //todo publish error state
+       await publish(
+        httpRequestChannel().status({
+            nodeId,
+            status: "error"
+        }),
+    );
         throw new NonRetriableError("HTTP node is not configured with a variable name to store the response");
     }
 
     if(!data.method){
-        //todo publish error state
+        await publish(
+        httpRequestChannel().status({
+            nodeId,
+            status: "error"
+        }),
+    );
         throw new NonRetriableError("HTTP node is not configured with a method");
     }
-
+    try{
     const result = await step.run("http-request",async() => {
         const endpoint = Handlebars.compile(data.endpoint)(context);
         const method = data.method;
@@ -67,6 +89,25 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({data,n
             [data.variableName]: responsePayload
         }
     });
+
+    await publish(
+        httpRequestChannel().status({
+            nodeId,
+            status: "success"
+        }),
+    );
     
     return result;
+
+} catch(error){
+    
+    await publish(
+        httpRequestChannel().status({
+            nodeId,
+            status: "error"
+        }),
+    );
+
+    throw error;
+}
 }

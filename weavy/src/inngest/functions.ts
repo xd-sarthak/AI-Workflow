@@ -4,6 +4,8 @@ import {createGoogleGenerativeAI} from "@ai-sdk/google";
 import { NonRetriableError } from "inngest";
 import { topologicalSort } from "./utils"
 import { getExecutor } from "@/features/executions/lib/executor-registry";
+import { httpRequestChannel } from "./channels/http-request";
+import { manualTriggerChannel } from "./channels/manual-trigger";
 
 const google = createGoogleGenerativeAI();
 
@@ -18,8 +20,13 @@ export const helloWorld = inngest.createFunction(
 
 export const executeWorkflow = inngest.createFunction(
   { id: "execute-workflow" },
-  { event: "workflows/execute.workflow" },
-  async ({ event, step }) => {
+  { event: "workflows/execute.workflow",
+    channel: [
+      httpRequestChannel(),
+      manualTriggerChannel()
+    ]
+   },
+  async ({ event, step, publish }) => {
 
     const workflowId = event.data.workflowId;
 
@@ -53,6 +60,7 @@ export const executeWorkflow = inngest.createFunction(
         nodeId: node.id,
         context,
         step,
+        publish
       });
     }
     return {
