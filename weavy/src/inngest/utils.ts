@@ -46,6 +46,9 @@ export const topologicalSort = (nodes: Node[],connections: Connection[]): Node[]
     workflowId: string;
     [key: string]: any;
    }) => {
+    if (!data.workflowId?.trim()) {
+      throw new Error("workflowId is required and cannot be empty");
+    }
       return inngest.send({
         name: "workflows/execute.workflow",
         data

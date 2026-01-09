@@ -8,6 +8,7 @@ import {toast} from "sonner";
 import { Button } from "@/components/ui/button";
 import { CopyIcon } from "lucide-react";
 import { generateGoogleFormScript } from "./utils";
+import { error } from "console";
 
 interface Props {
     open: boolean;
@@ -19,6 +20,9 @@ export const GoogleFormTriggerDialog = ({ open, onOpenChange }: Props) => {
     const workflowId = params.workflowId as string;
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+    if(!baseUrl){
+        console.error("Base URL not configured",error);      
+    }
     const webhookUrl = `${baseUrl}/api/webhooks/google-form?workflowId=${workflowId}`;
 
     const copyToClipboard = async () => {
@@ -44,12 +48,12 @@ export const GoogleFormTriggerDialog = ({ open, onOpenChange }: Props) => {
                         <Label htmlFor="webhook-url">
                             Webhook URL
                         </Label>
-                        <div>
+                        <div className="flex gap-2">
                             <Input
                             id="webhook-url"
                             value={webhookUrl}
                             readOnly
-                            className="font-mono text-sm"
+                            className="font-mono text-sm flex-1"
                             />
                             <Button
                                 variant="outline"
