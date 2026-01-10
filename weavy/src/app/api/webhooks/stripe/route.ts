@@ -1,4 +1,5 @@
 import { sendWorkflowExecution } from "@/inngest/utils";
+import { timeStamp } from "console";
 import { NextRequest,NextResponse } from "next/server";
 
 export async function POST(request: NextRequest){
@@ -11,28 +12,27 @@ export async function POST(request: NextRequest){
 
         const body = await request.json();
 
-        const formData = {
-            formId: body.formId,
-            formTitle: body.formTitle,
-            responseId: body.responseId,
-            timestamp: body.timestamp,
-            respondentEmail: body.respondentEmail,
-            responses: body.responses,
-            raw: body
+        const stripeData = {
+            //event metadata
+            eventId: body.id,
+            eentType: body.type,
+            timestamp: body.created,
+            livemode: body.livemode,
+            raw: body.data?.object
         };
 
         //trigger inngest job
         await sendWorkflowExecution({
             workflowId,
             initialData: {
-                googleForm: formData
+                stripe: stripeData
             }
         });
 
-        return NextResponse.json({message: "Google form webhook received"}, {status: 200});
+        return NextResponse.json({message: "Stripe webhook received"}, {status: 200});
         
     } catch (error) {
-        console.error("Google form webhook error: ",error);
+        console.error("Stripe webhook error: ",error);
         return NextResponse.json({message: "Internal server error"}, {status: 500});  
     }
 }

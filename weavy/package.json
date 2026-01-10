@@ -9,12 +9,13 @@
     "lint": "eslint",
     "inngest:dev": "inngest-cli dev",
     "dev:all": "dotenv -- mprocs",
-    "ngrok:dev": "dotenv -- ngrok http --url=$NGROK_URL 3000"
+    "ngrok:dev": "dotenv -- npx ngrok http 3000"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.1",
     "@hookform/resolvers": "^5.2.2",
     "@inngest/realtime": "0.4.4",
+    "@paralleldrive/cuid2": "^3.0.6",
     "@prisma/client": "6.16.3",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -59,8 +60,10 @@
     "handlebars": "^4.7.8",
     "inngest": "3.44.1",
     "input-otp": "^1.4.2",
+    "jotai": "^2.16.1",
     "ky": "^1.14.2",
     "lucide-react": "^0.562.0",
+    "mprocs": "^0.8.2",
     "next": "15.5.4",
     "next-themes": "^0.4.6",
     "nuqs": "^2.8.6",
