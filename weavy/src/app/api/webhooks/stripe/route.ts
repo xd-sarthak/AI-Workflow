@@ -15,7 +15,7 @@ export async function POST(request: NextRequest){
         const stripeData = {
             //event metadata
             eventId: body.id,
-            eentType: body.type,
+            eventType: body.type,
             timestamp: body.created,
             livemode: body.livemode,
             raw: body.data?.object
