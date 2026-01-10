@@ -3,3 +3,4 @@ ERROR [portable_pty::win::psuedocon] CreateProcessW `"bun run inngest:dev\0"` in
 ERROR [portable_pty::win::psuedocon] CreateProcessW `"bun run dev\0"` in cwd `Some("C:\\Users\\265660\\Desktop\\weavy.ai\\weavy\0")` failed: The system cannot find the file specified. (os error 2)
 ERROR [lib::error] Error: channel closed
 ERROR [lib::error] Error: channel closed
+ERROR [lib::error] Error: channel closed

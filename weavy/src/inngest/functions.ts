@@ -8,8 +8,8 @@ import { httpRequestChannel } from "./channels/http-request";
 import { manualTriggerChannel } from "./channels/manual-trigger";
 import { GoogleFormTriggerChannel } from "./channels/google-form-trigger-channel";
 import { StripeTriggerChannel } from "./channels/stripe-trigger-channel";
+import { GeminiChannel } from "./channels/gemini-channel";
 
-const google = createGoogleGenerativeAI();
 
 export const helloWorld = inngest.createFunction(
   { id: "hello-world" },
@@ -27,7 +27,8 @@ export const executeWorkflow = inngest.createFunction(
       httpRequestChannel(),
       manualTriggerChannel(),
       GoogleFormTriggerChannel(),
-      StripeTriggerChannel()
+      StripeTriggerChannel(),
+      GeminiChannel()
     ]
    },
   async ({ event, step, publish }) => {
