@@ -12,9 +12,9 @@ Handlebars.registerHelper("json",(context) =>{
 
 
 type HttpRequestData = {
-    variableName: string;
-    endpoint: string;
-    method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD";
+    variableName?: string;
+    endpoint?: string;
+    method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD";
     body?: string;
 };
 
@@ -63,7 +63,7 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({data,n
 
         const options:KyOptions = {method};
 
-        if(["POST", "PUT", "PATCH"].includes(method) && data.body) {
+        if(["POST", "PUT", "PATCH"].includes(method!) && data.body) {
             const resolved = Handlebars.compile(data.body || "{}")(context);
             JSON.parse(resolved); // Validate JSON
             options.body = resolved;
@@ -86,7 +86,7 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({data,n
 
         return {
             ...context,
-            [data.variableName]: responsePayload
+            [data.variableName!]: responsePayload
         }
     });
 
