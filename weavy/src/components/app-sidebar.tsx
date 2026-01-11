@@ -73,9 +73,9 @@ export const AppSidebar = () => {
                 <SidebarMenuItem>
                     <SidebarMenuButton asChild className="gap-x-4 h-10 px-4">
                         <Link href="/" prefetch>
-                        <Image src="/weavon.svg" alt="Weavy" width={32} height={32} />
+                        <Image src="/weavon.svg" alt="RunBook" width={32} height={32} />
                         <span className="font-semibold text-sm">
-                            Weavy
+                            RunBook
                         </span>
                         </Link>
                     </SidebarMenuButton>
