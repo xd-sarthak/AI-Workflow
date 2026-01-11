@@ -5,19 +5,21 @@ import { httpRequestExecutor } from "@/features/executions/components/http-reque
 import { GoogleFormTriggerExecutor } from "@/features/triggers/components/google-form-trigger/executor";
 import { StripeTriggerExecutor } from "@/features/triggers/components/stripe-trigger/executor";
 import { geminiExecutor } from "../components/gemini/executor";
+import { openAIExecutor } from "../components/openai/executor";
 
 // Registry of executors for different node types
-export const executorRegistry: Partial<Record<NodeType,NodeExecutor>> = {
+export const executorRegistry: Partial<Record<NodeType, NodeExecutor>> = {
     [NodeType.INITIAL]: manualTriggerExecutor,
     [NodeType.MANUAL_TRIGGER]: manualTriggerExecutor,
     [NodeType.HTTP_REQUEST]: httpRequestExecutor,
     [NodeType.GOOGLE_FORM_TRIGGER]: GoogleFormTriggerExecutor,
-    [NodeType.STRIPE_TRIGGER] : StripeTriggerExecutor,
-    [NodeType.GEMINI] : geminiExecutor
+    [NodeType.STRIPE_TRIGGER]: StripeTriggerExecutor,
+    [NodeType.GEMINI]: geminiExecutor,
+    [NodeType.OPENAI]: openAIExecutor
 };
 
-export const getExecutor = (type: NodeType) : NodeExecutor => {
+export const getExecutor = (type: NodeType): NodeExecutor => {
     const executor = executorRegistry[type];
-    if(!executor) throw new Error(`No executor found for node type: ${type}`);
+    if (!executor) throw new Error(`No executor found for node type: ${type}`);
     return executor;
 }

@@ -12,12 +12,12 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
                     >
                         <Image 
                             src="/weavon.svg" 
-                            alt="Weavy Logo" 
+                            alt="RunBook Logo" 
                             width={32} 
                             height={32} 
                             priority
                         />
-                        <span>Weavy</span>
+                        <span>RunBook</span>
                     </Link>
                 </div>
                 {children}

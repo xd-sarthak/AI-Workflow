@@ -4,3 +4,6 @@ ERROR [portable_pty::win::psuedocon] CreateProcessW `"bun run dev\0"` in cwd `So
 ERROR [lib::error] Error: channel closed
 ERROR [lib::error] Error: channel closed
 ERROR [lib::error] Error: channel closed
+ERROR [lib::error] Error: channel closed
+ERROR [lib::error] Error: channel closed
+ERROR [lib::error] Error: channel closed
