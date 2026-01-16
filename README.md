@@ -1,4 +1,4 @@
-# Weavy AI
+# RunBook AI
 
 **A visual workflow execution engine built with Next.js 15, React Flow, Prisma, and Inngest.**
 
@@ -25,7 +25,7 @@ This application demonstrates a production-grade implementation of an event-driv
 
 The system utilizes a modern, serverless-ready architecture designed for scalability and reliability.
 
-![Weavy AI System Architecture](./weavy/public/system_architecture.png)
+![RunBook AI System Architecture](./weavy/public/system_architecture.png)
 
 ### Data Flow
 1.  **Definition**: Users construct workflows in the `React Flow` canvas. The graph state is synchronized via `tRPC` to the **PostgreSQL** database.
