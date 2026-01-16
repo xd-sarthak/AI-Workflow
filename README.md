@@ -1,310 +1,130 @@
-# RunBook
+# Weavy AI
 
 **A visual workflow execution engine built with Next.js 15, React Flow, Prisma, and Inngest.**
 
-This is a full-stack application demonstrating end-to-end system design—from database schema to real-time UI updates—for webhook-triggered, AI-augmented workflow automation.
+This application demonstrates a production-grade implementation of an event-driven, AI-augmented workflow automation platform. It features end-to-end type safety, reliable background query execution, and a high-performance node-based editor.
 
 ---
 
-## Screenshots
+## 📸 Interface
 
-### Login
-![Login Page](./weavy/public/screenshots/login.png)
-
-### Workspace
-![Workspace Page](./weavy/public/screenshots/workspace.png)
-
-### Workflow Editor
-![Workflow Editor](./weavy/public/screenshots/editor.png)
+### Core Experience
+| Workspace | Workflow Editor |
+|-----------|----------------|
+| ![Workspace Page](./weavy/public/screenshots/workspace.png) | ![Workflow Editor](./weavy/public/screenshots/editor.png) |
 
 ### Node Types
-
-| HTTP Request | Stripe Trigger |
-|--------------|----------------|
-| ![HTTP Request Node](./weavy/public/screenshots/http-request-node.png) | ![Stripe Trigger Node](./weavy/public/screenshots/stripe-trigger-node.png) |
-
-| Gemini AI | OpenAI |
-|-----------|--------|
-| ![Gemini Node](./weavy/public/screenshots/gemini-node.png) | ![OpenAI Node](./weavy/public/screenshots/openai-node.png) |
+| Integrations | AI Providers |
+|--------------|--------------|
+| ![HTTP Request Node](./weavy/public/screenshots/http-request-node.png) | ![Gemini Node](./weavy/public/screenshots/gemini-node.png) |
+| ![Stripe Trigger Node](./weavy/public/screenshots/stripe-trigger-node.png) | ![OpenAI Node](./weavy/public/screenshots/openai-node.png) |
 
 ---
 
-## Engineering Summary
+## 🏗 System Architecture
 
-| Dimension | Implementation |
-|-----------|----------------|
-| **Frontend** | Next.js 15 App Router, React 19, React Flow (node-based canvas), Jotai (state), tRPC (type-safe API) |
-| **Backend** | Next.js API routes, Inngest (event-driven execution), Prisma ORM |
-| **Database** | PostgreSQL with relational schema for workflows, nodes, connections |
-| **Auth** | better-auth with session management |
-| **AI Integration** | Vercel AI SDK with Gemini and OpenAI providers |
-| **Real-time** | Inngest Realtime channels for execution status streaming |
+The system utilizes a modern, serverless-ready architecture designed for scalability and reliability.
 
+![Weavy AI System Architecture](./weavy/public/system_architecture.png)
 
----
-
-## System Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                              CLIENT                                      │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────────────────────┐  │
-│  │ React Flow  │◄──►│  Jotai      │◄──►│  tRPC React Query Client    │  │
-│  │ (Canvas)    │    │  (State)    │    │  (Type-safe API calls)      │  │
-│  └─────────────┘    └─────────────┘    └──────────────┬──────────────┘  │
-└───────────────────────────────────────────────────────┼─────────────────┘
-                                                        │
-                                                        ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                           NEXT.JS SERVER                                 │
-│  ┌─────────────────┐    ┌─────────────────┐    ┌───────────────────┐   │
-│  │ tRPC Router     │    │ Webhook Routes  │    │ Inngest Serve     │   │
-│  │ (CRUD ops)      │    │ /api/webhooks/* │    │ /api/inngest      │   │
-│  └────────┬────────┘    └────────┬────────┘    └─────────┬─────────┘   │
-│           │                      │                       │              │
-│           ▼                      ▼                       ▼              │
-│  ┌─────────────────────────────────────────────────────────────────┐   │
-│  │                        PRISMA CLIENT                             │   │
-│  │              (Type-safe database access layer)                   │   │
-│  └──────────────────────────────┬──────────────────────────────────┘   │
-└─────────────────────────────────┼───────────────────────────────────────┘
-                                  │
-          ┌───────────────────────┼───────────────────────┐
-          ▼                       ▼                       ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────────────┐
-│   PostgreSQL    │    │    Inngest      │    │   External Services     │
-│   (Persistence) │    │  (Execution)    │    │  (Gemini, OpenAI, APIs) │
-└─────────────────┘    └─────────────────┘    └─────────────────────────┘
-```
+### Data Flow
+1.  **Definition**: Users construct workflows in the `React Flow` canvas. The graph state is synchronized via `tRPC` to the **PostgreSQL** database.
+2.  **Trigger**: External webhooks or manual triggers hit the `/api/webhooks` endpoint.
+3.  **Queue**: Events are pushed to **Inngest**, which handles durability, retries, and flow control.
+4.  **Execution**: The **Workflow Engine** retrieves the DAG, performs a topological sort to determine execution order, and dispatches steps.
+5.  **Feedback**: Execution status is streamed back to the frontend in real-time via persistent channels.
 
 ---
 
-## Technical Decisions & Tradeoffs
+## 🛠 Technology Stack
 
-### 1. Inngest for Workflow Execution
+We deliberately chose a stack that balances developer experience with production capability.
 
-**Decision**: Use Inngest instead of building a custom queue/worker system.
-
-**Why**:
-- Step-level execution with automatic retries
-- Built-in observability (logs, traces, replay)
-- Realtime channels for status streaming
-- Eliminates Redis/queue infrastructure
-
-**Tradeoff**: Vendor dependency. Inngest is open-source and self-hostable, but the managed service is the happy path. Accepted because the alternative (Bull + Redis + custom retry logic + custom observability) would have tripled development time for the execution layer.
-
-**Code reference**: [`src/inngest/functions.ts`](src/inngest/functions.ts)
+| Category | Technology | Rationale |
+|----------|------------|-----------|
+| **Framework** | [Next.js 15 (App Router)](https://nextjs.org/) | Leveraging React Server Components for performance and Server Actions for simplified mutations. |
+| **Language** | [TypeScript](https://www.typescriptlang.org/) | Strict type safety across the entire stack, sharing types between client and server. |
+| **API Layer** | [tRPC](https://trpc.io/) | End-to-end type safety without code generation or schema syncing. |
+| **Database** | [Prisma](https://www.prisma.io/) + PostgreSQL | Type-safe ORM for reliable database migrations and query construction. |
+| **Orchestration** | [Inngest](https://www.inngest.com/) | Durable execution engine that replaces traditional message queues (Redis/Bull) with function-level flow control. |
+| **Canvas UI** | [React Flow (XYFlow)](https://xyflow.com/) | Flexible, performant library for building node-based interactable diagrams. |
+| **Auth** | [Better Auth](https://better-auth.com/) | Lightweight, comprehensive authentication with built-in session management. |
+| **Validation** | [Zod](https://zod.dev/) | Runtime schema validation for API inputs and environment variables. |
+| **AI SDK** | [Vercel AI SDK](https://sdk.vercel.ai/docs) | Unified interface for interacting with multiple LLM providers (OpenAI, Gemini). |
 
 ---
 
-### 2. Topological Sort for Execution Order
+## 🧩 Key Engineering Techniques
 
-**Decision**: Compute execution order at runtime via topological sort.
+### 1. Reliable Workflow Orchestration (DAG execution)
+Instead of a simple linear queue, the system implements a runtime topological sort to handle complex dependency graphs.
+*   **Technique**: The workflow graph is treated as a Directed Acyclic Graph (DAG).
+*   **Implementation**: Steps are executed only when their upstream dependencies are resolved. Inngest's `step.run` provides checkpointing, ensuring that if a long-running AI task fails, it can be retried without re-running the entire workflow.
 
-**Why**:
-- Workflows are DAGs (directed acyclic graphs)
-- Users can connect nodes arbitrarily
-- Must guarantee dependencies run before dependents
-
-**Implementation**:
 ```typescript
-// Edges are derived from Connection records
-const edges: [string, string][] = connections.map((c) => [c.fromNodeId, c.toNodeId]);
-const sortedNodeIds = toposort(edges);
-```
-
-**Edge case handled**: Nodes with no connections are included via self-edges to ensure they appear in the sorted output.
-
-**Tradeoff**: Runtime sort on every execution. Could cache, but workflows are typically <50 nodes. O(V+E) is acceptable.
-
-**Code reference**: [`src/inngest/utils.ts`](src/inngest/utils.ts)
-
----
-
-### 3. Handlebars for Context Templating
-
-**Decision**: Use Handlebars for injecting upstream node outputs into downstream node configurations.
-
-**Why**:
-- Users need to reference previous outputs: `{{stripe.eventType}}`
-- Handlebars is well-known, safe (no arbitrary code execution), and has helpers
-- Custom `json` helper for serializing objects in templates
-
-**Example**:
-```typescript
-const endpoint = Handlebars.compile(data.endpoint)(context);
-// "https://api.example.com/users/{{userId}}" → "https://api.example.com/users/cust_123"
-```
-
-**Tradeoff**: Limited expressiveness. No conditionals in templates. Accepted because workflow-level conditionals should be nodes, not template logic.
-
-**Code reference**: [`src/features/executions/components/http-request/executor.ts`](src/features/executions/components/http-request/executor.ts)
-
----
-
-### 4. Executor Registry Pattern
-
-**Decision**: Node execution logic is decoupled from node types via a registry.
-
-**Why**:
-- Adding a new node type = add executor + add component
-- Execution engine doesn't change
-- Type safety via `NodeType` enum
-
-**Implementation**:
-```typescript
-export const executorRegistry: Partial<Record<NodeType, NodeExecutor>> = {
-  [NodeType.HTTP_REQUEST]: httpRequestExecutor,
-  [NodeType.GEMINI]: geminiExecutor,
-  [NodeType.OPENAI]: openAIExecutor,
-  // ...
-};
-
-export const getExecutor = (type: NodeType): NodeExecutor => {
-  const executor = executorRegistry[type];
-  if (!executor) throw new Error(`No executor for: ${type}`);
-  return executor;
-};
-```
-
-**Tradeoff**: Partial record means runtime errors possible for unregistered types. Could use exhaustive type checking, but opted for explicit error message.
-
-**Code reference**: [`src/features/executions/lib/executor-registry.ts`](src/features/executions/lib/executor-registry.ts)
-
----
-
-### 5. Realtime Status via Inngest Channels
-
-**Decision**: Publish execution status (loading/success/error) per node via Inngest Realtime.
-
-**Why**:
-- Users need immediate feedback during execution
-- Polling is wasteful; WebSocket/SSE is better
-- Inngest provides this out of the box
-
-**Implementation**:
-```typescript
-await publish(
-  httpRequestChannel().status({
-    nodeId,
-    status: "loading"
-  })
-);
-// ... execute ...
-await publish(
-  httpRequestChannel().status({
-    nodeId,
-    status: "success"
-  })
-);
-```
-
-**Tradeoff**: Coupling between executor and channel definition. Each node type has its own channel. Could abstract, but explicit channels are easier to trace.
-
-**Code reference**: [`src/inngest/channels/`](src/inngest/channels/)
-
----
-
-### 6. React Flow for Visual Editor
-
-**Decision**: Use React Flow for the node-based canvas.
-
-**Why**:
-- Mature, well-documented, performant
-- Built-in support for custom nodes, edges, minimap, controls
-- Large ecosystem (xyflow)
-
-**Tradeoff**: Large dependency (~200KB). Accepted because building a custom canvas would take months and be worse.
-
-**Code reference**: [`src/features/editor/components/editor.tsx`](src/features/editor/components/editor.tsx)
-
----
-
-### 7. Prisma Schema Design
-
-**Decision**: Separate `Node` and `Connection` tables, both referencing `Workflow`.
-
-**Why**:
-- Normalize node data (JSON column for flexible node config)
-- Connections are explicit edges with `fromNodeId`, `toNodeId`, `fromOutput`, `toInput`
-- Supports future multi-output nodes
-
-**Schema**:
-```prisma
-model Node {
-  id         String   @id @default(cuid())
-  workflowId String
-  workflow   Workflow @relation(...)
-  type       NodeType
-  position   Json
-  data       Json     @default("{}")
-  outputConnections Connection[] @relation("FromNode")
-  inputConnections  Connection[] @relation("ToNode")
-}
-
-model Connection {
-  id         String @id @default(cuid())
-  workflowId String
-  fromNodeId String
-  toNodeId   String
-  fromOutput String @default("main")
-  toInput    String @default("main")
-  @@unique([fromNodeId, fromOutput, toNodeId, toInput])
+// Example: Dynamic dependency resolution
+const sortedNodes = toposort(edges);
+for (const node of sortedNodes) {
+  await step.run(`execute-${node.id}`, async () => {
+    // Execution logic
+  });
 }
 ```
 
-**Tradeoff**: `data` as JSON loses type safety at the database level. Application-level validation (Zod) compensates.
+### 2. End-to-End Type Safety
+By combining **Prisma**, **tRPC**, and **Zod**, the application achieves a continuous type safety loop. A change in the database schema automatically propagates typed errors to the frontend form components.
+*   **Database**: Prisma generates types from `schema.prisma`.
+*   **API**: tRPC routers infer input/output types from Zod schemas and Prisma returns.
+*   **Frontend**: React components use `trpc.useQuery` hooks which inherit the exact return type of the backend function.
 
-**Code reference**: [`prisma/schema.prisma`](prisma/schema.prisma)
-
----
-
-## Running Locally
-
-```bash
-git clone https://github.com/yourusername/runbook.git
-cd runbook
-
-npm install
-
-# Set environment variables
-cp .env.example .env
-# DATABASE_URL, INNGEST_*, GOOGLE_GENERATIVE_AI_API_KEY, OPENAI_API_KEY
-
-# Database setup
-npx prisma migrate dev
-
-# Run dev server + Inngest
-npm run dev:all
-```
+### 3. Optimistic Updates & Real-time State
+The UI feels instant thanks to a combination of optimistic UI updates and real-time streams.
+*   **Optimistic**: When a user moves a node, the local state updates immediately while the DB update happens in the background.
+*   **Real-time**: Workflow execution logs are streamed via **Inngest Realtime** channels, providing immediate feedback on long-running AI processes without polling.
 
 ---
 
-## Code Organization
+## 📂 Project Structure
 
-```
+```text
 src/
-├── app/                    # Next.js App Router
-│   ├── (auth)/             # Auth pages
-│   ├── (dashboard)/        # Main app
-│   │   ├── (editor)/       # Workflow editor
-│   │   └── (rest)/         # Dashboard, lists
-│   └── api/
-│       ├── inngest/        # Inngest handler
-│       ├── trpc/           # tRPC handler
-│       └── webhooks/       # Webhook endpoints
-├── features/
-│   ├── auth/               # Auth utilities
-│   ├── editor/             # Editor components, state
-│   ├── executions/         # Node executors, components
-│   ├── triggers/           # Trigger node implementations
-│   └── workflows/          # Workflow CRUD, hooks
-├── inngest/
-│   ├── functions.ts        # Inngest function definitions
-│   ├── channels/           # Realtime channels
-│   └── utils.ts            # Topological sort, helpers
-├── config/
-│   └── node-components.ts  # Node type → component mapping
-└── lib/
-    └── db.ts               # Prisma client
+├── app/                  # Next.js App Router (Pages & Layouts)
+│   ├── (dashboard)/      # Protected application routes
+│   └── api/              # API Routes (tRPC, Inngest, Webhooks)
+├── components/           # Shared atomic UI components (Radix primitives)
+├── features/             # Domain-Driven Design (DDD) modules
+│   ├── editor/           # React Flow logic, node components, toolbar
+│   ├── executions/       # Logic for running workflows (Executors)
+│   ├── triggers/         # Trigger node implementations
+│   ├── workflows/        # Workflow CRUD operations
+│   └── ...
+├── inngest/              # Background functions & event definitions
+├── lib/                  # Shared utilities (DB, Auth, Env)
+└── trpc/                 # tRPC router and context definitions
+```
+*   **`src/features`**: Code is co-located by business domain rather than technical type. Each feature folder contains its own components, hooks, and server actions.
+*   **`src/inngest`**: Contains the "brain" of the backend—workflow definitions and step functions.
+
 ---
+
+## 🚀 Getting Started
+
+1.  **Clone & Install**
+    ```bash
+    git clone https://github.com/your-repo/weavy-ai.git
+    cd weavy-ai
+    npm install
+    ```
+
+2.  **Environment Setup**
+    Copy `.env.example` to `.env` and configure your keys:
+    ```bash
+    cp .env.example .env
+    # Required: DATABASE_URL, INNGEST_SIGNING_KEY, OPENAI_API_KEY
+    ```
+
+3.  **Run Development Environment**
+    We use `mprocs` to run all necessary services (Next.js, Inngest Dev Server, Prisma Studio) in a single terminal.
+    ```bash
+    npm run dev:all
+    ```
